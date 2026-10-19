@@ -1,0 +1,9 @@
+{
+  "_warning": "虚构样例菜单，品名与价格均为占位符，与任何真实门店无关。真实使用时应由 MCP query-meals 提供。",
+  "items": [
+    { "name": "示例汉堡", "unit_price": 25.5, "quantity": 1 },
+    { "name": "示例薯条(中)", "unit_price": 12.0, "quantity": 1 },
+    { "name": "示例可乐(中)", "unit_price": 9.5, "quantity": 1 }
+  ],
+  "coupon_paid_total": 21.9
+}

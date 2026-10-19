@@ -1,0 +1,10 @@
+{
+  "_warning": "虚构样例数据，不代表任何品牌的真实成本结构。使用者必须替换为本人认可的口径。",
+  "food_cost_ratio": 0.32,
+  "labor_ratio": 0.18,
+  "occupancy_ratio": 0.12,
+  "royalty_ratio": 0.05,
+  "other_ratio": 0.06,
+  "source": "样例（虚构）",
+  "note": "仅用于演示计算流程，数字为占位符"
+}

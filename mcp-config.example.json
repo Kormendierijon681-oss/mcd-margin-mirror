@@ -1,0 +1,15 @@
+{
+  "_comment": "脱敏配置示例。只允许环境变量占位符，禁止填入任何真实 Token、密钥或账号凭证。",
+  "mcpServers": {
+    "mcd-mcp": {
+      "type": "http",
+      "url": "https://open.mcd.cn/mcp",
+      "headers": {
+        "Authorization": "Bearer ${MCD_MCP_TOKEN}"
+      }
+    }
+  },
+  "envExample": {
+    "MCD_MCP_TOKEN": "your-token-here-never-commit-real-one"
+  }
+}
