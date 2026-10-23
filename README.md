@@ -36,7 +36,7 @@
 ## 快速开始
 
 ```bash
-git clone https://github.com/<你的用户名>/mcd-margin-mirror.git
+git clone https://github.com/Kormendierijon681-oss/mcd-margin-mirror.git
 cd mcd-margin-mirror
 
 # 1) 离线演示（不需要 MCP Token，用虚构样例数据跑通全流程）
