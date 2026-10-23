@@ -26,7 +26,7 @@
 
 麦麦毛利镜做的事：
 
-1. 通过麦当劳 MCP 取当前门店的实时菜单价格与可用券；
+1. 通过麦当劳 MCP 取当前门店的实时菜单（`query-meals` / `query-meal-detail`）与四路券池；
 2. 用 MCP 的 `calculate-price` 得到券后实付；
 3. 按使用者提供的成本结构，把这一单拆成食品/人工/房租/特许权费/其他；
 4. 算出估算毛利、毛利率，以及**盈亏平衡让利率**（超过这个折扣，这一单门店不赚钱）。
@@ -48,6 +48,45 @@ python3 scripts/selftest.py      # 16 passed, 0 failed
 ```
 
 要求：Python 3.9+，**零第三方依赖**（只用标准库）。
+
+## 接入麦当劳 MCP（接真实数据）
+
+### 第 1 步：申请 MCP Token
+
+1. 打开 <https://open.mcd.cn/mcp>，用**中国大陆手机号**登录（免费）；
+2. 进入控制台 → 找到「我的应用 / 激活」→ 点击**激活**；
+3. 申请成功后**一键复制** MCP Token。
+
+### 第 2 步：配置连接器
+
+在 WorkBuddy（或 Cursor / Claude Code 等支持自定义 MCP 的客户端）里添加自定义 MCP Server：
+
+```json
+{
+  "mcpServers": {
+    "mcd-mcp": {
+      "url": "https://mcp.mcd.cn",
+      "headers": {
+        "Authorization": "Bearer ${MCD_MCP_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+本仓库 `mcp-config.example.json` 就是这份配置，**Token 一律走环境变量占位符，仓库里不存真实 Token**。
+配置后回到客户端的「自定义连接器」把 `mcd-mcp` **启用**，状态显示「已连接」即可。
+
+### 第 3 步：跑一次真实链路
+
+在 Agent 对话框里直接说人话即可，例如：
+
+```
+用麦当劳 MCP 查一下我当前门店在售的套餐和可领的券，
+按我的成本参数算一下这单大概的门店毛利和盈亏平衡让利率。
+```
+
+Agent 负责调 MCP 取数并把结果交给 `src/estimator.py` 做确定性计算 —— 完整的工具清单、调用流程与口径说明见 [`MCP_INTEGRATION.md`](./MCP_INTEGRATION.md)。
 
 ## 接真实数据
 
@@ -76,6 +115,8 @@ python3 scripts/selftest.py      # 16 passed, 0 failed
 | `royalty_ratio` | 变动 | 券后实付 |
 
 **固定类不因顾客用券而减少，变动类跟着实付走。** 这个区分是本工具算得准不准的关键。
+
+⚠️ **口径提醒**：人工与房租属于门店**期间固定成本**，本工具按"该单原价占门店期间原价合计的份额"分摊到单笔。门店单期汇总总额守恒，但**单品层面会失真**（高价单被多摊人工房租）。要看单品的真实边际贡献，把 `labor_ratio` 与 `occupancy_ratio` 置 0 只看食材、包装与特许权费即可。详见 [`MCP_INTEGRATION.md`](./MCP_INTEGRATION.md) 第四节。
 
 ---
 

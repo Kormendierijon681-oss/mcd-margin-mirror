@@ -1,9 +1,9 @@
 {
-  "_comment": "脱敏配置示例。只允许环境变量占位符，禁止填入任何真实 Token、密钥或账号凭证。",
+  "_comment": "脱敏配置示例。只允许环境变量占位符，禁止填入任何真实 Token、密钥或账号凭证。Token 在 open.mcd.cn/mcp 申请。",
   "mcpServers": {
     "mcd-mcp": {
       "type": "http",
-      "url": "https://open.mcd.cn/mcp",
+      "url": "https://mcp.mcd.cn",
       "headers": {
         "Authorization": "Bearer ${MCD_MCP_TOKEN}"
       }
