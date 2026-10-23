@@ -2,3 +2,10 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+# 环境变量与本地配置（防止真实 MCP Token 入库）
+.env
+.env.*
+*.env
+!.env.example
+*.local.json
