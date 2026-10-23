@@ -33,6 +33,12 @@
 
 ---
 
+## 离线 demo 真实输出
+
+![麦麦毛利镜 离线 demo 输出](docs/demo_screenshot.png)
+
+*上图为 `python3 scripts/demo.py` 的真实运行结果（示例数据为虚构占位符）。*
+
 ## 快速开始
 
 ```bash
