@@ -1,0 +1,23 @@
+{
+  "mergedAt": "2026-10-19T16:03:39.041799+00:00",
+  "totalFindings": 0,
+  "byRiskType": {},
+  "bySeverity": {
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0
+  },
+  "deduplicatedCount": 0,
+  "discardedCount": 0,
+  "loadedAgents": [
+    "light-inline"
+  ],
+  "staleAgents": [],
+  "session": {
+    "runId": "diff-fast-20261019235911",
+    "startedAt": 1792425552.181071,
+    "startedAtIso": "2026-10-19T15:59:12.181071+00:00"
+  },
+  "findings": []
+}
