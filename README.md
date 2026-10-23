@@ -33,11 +33,16 @@
 
 ---
 
-## 离线 demo 真实输出
+## 在线试玩（零配置，打开即用）
 
-![麦麦毛利镜 离线 demo 输出](docs/demo_screenshot.png)
+**https://kormendierijon681-oss.github.io/mcd-margin-mirror/**
 
-*上图为 `python3 scripts/demo.py` 的真实运行结果（示例数据为虚构占位符）。*
+拖动让利力度滑块，实时看门店毛利怎么被优惠吃掉；成本率可以改成你自己的口径。
+页面的计算逻辑与 `src/estimator.py` **完全一致**（含按单品分摊到分的取整规则），输出到分位可对齐。
+
+![麦麦毛利镜 在线试玩](docs/demo_screenshot.png)
+
+*上图为在线试玩的真实截图（示例数据为虚构占位符）。离线版本：`python3 scripts/demo.py`。*
 
 ## 快速开始
 
