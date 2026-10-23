@@ -1,27 +1,214 @@
 <!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8">
-<title>麦麦毛利镜</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>麦麦毛利镜 · 门店毛利交互演示</title>
 <style>
-  body { font-family: -apple-system, "PingFang SC", sans-serif; max-width: 640px;
-         margin: 40px auto; color: #1a1a1a; background: #fff; }
-  h1 { font-size: 22px; border-bottom: 2px solid #ffc72c; padding-bottom: 8px; }
-  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
-  td, th { padding: 8px 4px; border-bottom: 1px solid #eee; }
-  .num { text-align: right; font-variant-numeric: tabular-nums; }
-  .big { font-size: 28px; font-weight: 700; color: #d7232c; }
-  .note { font-size: 12px; color: #888; margin-top: 24px; }
-  .kv { display: flex; justify-content: space-between; padding: 4px 0; }
+  :root { --ink:#1a1a1a; --sub:#666; --line:#eee; --red:#d7232c; --green:#0a7d33; --amber:#ffc72c; }
+  * { box-sizing: border-box; }
+  body { font-family:-apple-system,"PingFang SC","Hiragino Sans GB",sans-serif; margin:0; color:var(--ink); background:#fff; }
+  .wrap { max-width:760px; margin:0 auto; padding:28px 20px 56px; }
+  h1 { font-size:24px; margin:0 0 4px; }
+  .sub { color:var(--sub); font-size:13px; margin-bottom:22px; }
+  .aha { background:#fff8e6; border-left:4px solid var(--amber); padding:14px 16px; border-radius:4px; margin:0 0 22px; font-size:15px; line-height:1.7; }
+  .card { border:1px solid var(--line); border-radius:8px; padding:18px; margin-bottom:16px; }
+  .row { display:flex; justify-content:space-between; align-items:baseline; padding:7px 0; border-bottom:1px dashed var(--line); }
+  .row:last-child { border-bottom:0; }
+  .row .k { color:var(--sub); font-size:14px; }
+  .row .v { font-variant-numeric:tabular-nums; font-size:15px; }
+  .big { font-size:30px; font-weight:700; }
+  .pos { color:var(--green); } .neg { color:var(--red); }
+  label { display:block; font-size:13px; color:var(--sub); margin:14px 0 6px; }
+  label:first-child { margin-top:0; }
+  input[type=range] { width:100%; accent-color:var(--amber); }
+  .inputs { display:grid; grid-template-columns:repeat(auto-fit,minmax(96px,1fr)); gap:10px; }
+  .inputs label { margin:0; }
+  .inputs input { width:100%; padding:6px 8px; border:1px solid #ddd; border-radius:4px; font-variant-numeric:tabular-nums; }
+  table { width:100%; border-collapse:collapse; margin-top:6px; font-size:14px; }
+  th,td { padding:8px 4px; border-bottom:1px solid var(--line); }
+  th { color:var(--sub); font-weight:500; font-size:13px; text-align:left; }
+  .num { text-align:right; font-variant-numeric:tabular-nums; }
+  .alert { margin:0 0 16px; padding:12px 14px; border-radius:6px; font-size:14px; font-weight:600; }
+  .alert.bad { background:#fdeced; color:var(--red); }
+  .alert.ok { background:#eaf6ee; color:var(--green); }
+  .ctabar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:22px 0 8px; }
+  .btn { display:inline-block; padding:10px 18px; border-radius:6px; background:#1f6feb; color:#fff; text-decoration:none; font-size:14px; font-weight:600; }
+  .btn.ghost { background:#fff; color:#1f6feb; border:1px solid #1f6feb; }
+  .note { font-size:12px; color:#888; margin-top:26px; line-height:1.8; }
+  code { background:#f5f5f5; padding:1px 5px; border-radius:3px; font-size:12px; }
+  svg { display:block; width:100%; margin-top:10px; }
 </style></head>
-<body>
+<body><div class="wrap">
+
 <h1>麦麦毛利镜</h1>
-<div class="kv"><span>原价合计</span><span>¥47.00</span></div>
-<div class="kv"><span>券后实付</span><span>¥21.90</span></div>
-<div class="kv"><span>优惠金额</span><span>¥25.10</span></div>
-<table>
-<tr><th>成本项</th><th class="num">金额</th><th class="num">占实付</th></tr>
-<tr><td>食品/包装</td><td class='num'>¥15.04</td><td class='num'>68.7%</td></tr><tr><td>人工</td><td class='num'>¥8.46</td><td class='num'>38.6%</td></tr><tr><td>房租物业</td><td class='num'>¥5.64</td><td class='num'>25.8%</td></tr><tr><td>特许权费</td><td class='num'>¥1.09</td><td class='num'>5.0%</td></tr><tr><td>其他</td><td class='num'>¥2.82</td><td class='num'>12.9%</td></tr>
-</table>
-<div class="kv"><span>估算毛利</span><span class="big">¥-11.16</span></div>
-<div class="kv"><span>估算毛利率</span><span class="big">-50.9%</span></div>
-<p class="note">成本口径来源：样例（虚构）<br>⚠️ 本结果为基于使用者自填成本率的结构化估算，非任何品牌的官方经营数据，不构成经营建议。</p>
+<div class="sub">拖动下面的滑块，看优惠力度如何吃掉门店的利润 · 公式与 <code>src/estimator.py</code> 完全一致</div>
+
+<div class="aha">
+  <b>顾客用券省下的钱，减的是门店的营收，不是门店的成本。</b><br>
+  薯条不会因为打折变便宜，店员的工资也不会。所以让利越大，这一单的毛利率掉得越陡——甚至变成亏的。
+</div>
+
+<div class="card">
+  <div class="row"><span class="k">原价合计</span><span class="v" id="list">¥47.00</span></div>
+  <div class="row"><span class="k">券后实付</span><span class="v" id="paid">¥21.90</span></div>
+  <div class="row"><span class="k">优惠金额</span><span class="v" id="save">¥25.10</span></div>
+</div>
+
+<div class="card">
+  <label>让利力度：<b id="dlab">53.4%</b>（相当于打 <span id="fold">4.7</span> 折）</label>
+  <input type="range" id="disc" min="0" max="80" step="0.1" value="53.4">
+  <div class="inputs">
+    <label>原价 ¥<input type="number" id="L" value="47" step="1" min="1"></label>
+    <label>食材 %<input type="number" id="food" value="32" step="1" min="0" max="100"></label>
+    <label>人工 %<input type="number" id="labor" value="18" step="1" min="0" max="100"></label>
+    <label>房租 %<input type="number" id="occ" value="12" step="1" min="0" max="100"></label>
+    <label>特许权费 %<input type="number" id="roy" value="5" step="1" min="0" max="99"></label>
+    <label>其他 %<input type="number" id="other" value="6" step="1" min="0" max="100"></label>
+  </div>
+</div>
+
+<div id="alert" class="alert bad"></div>
+
+<div class="card">
+  <div class="row"><span class="k">固定类成本（按原价计）</span><span class="v" id="fixed">¥31.96</span></div>
+  <div class="row"><span class="k">变动类成本（按实付计）</span><span class="v" id="royal">¥1.09</span></div>
+  <div class="row"><span class="k">估算毛利</span><span class="v big" id="gp">¥-11.16</span></div>
+  <div class="row"><span class="k">估算毛利率</span><span class="v big" id="gm">-50.9%</span></div>
+  <table>
+    <tr><th>成本项</th><th class="num">金额</th><th class="num">占实付</th></tr>
+    <tr><td>食品/包装</td><td class="num" id="c1">¥15.04</td><td class="num" id="p1">68.7%</td></tr>
+    <tr><td>人工</td><td class="num" id="c2">¥8.46</td><td class="num" id="p2">38.6%</td></tr>
+    <tr><td>房租物业</td><td class="num" id="c3">¥5.64</td><td class="num" id="p3">25.8%</td></tr>
+    <tr><td>特许权费</td><td class="num" id="c4">¥1.09</td><td class="num" id="p4">5.0%</td></tr>
+    <tr><td>其他</td><td class="num" id="c5">¥2.82</td><td class="num" id="p5">12.9%</td></tr>
+  </table>
+  <label>毛利率随让利力度的变化</label>
+  <svg id="chart" viewBox="0 0 700 220" preserveAspectRatio="none"></svg>
+</div>
+
+<div class="card">
+  <div class="row"><span class="k">盈亏平衡让利率</span><span class="v" id="be">28.4%</span></div>
+  <p class="note" style="margin-top:8px">超过这个让利力度，这一单在门店层面就不赚钱了。推导：实付 = L(1−r)，成本 = L·F + L(1−r)·R，毛利 = 0 ⟹ r = 1 − F/(1−R)。</p>
+</div>
+
+<div class="ctabar">
+  <a class="btn" href="https://github.com/Kormendierijon681-oss/mcd-margin-mirror" target="_blank">GitHub 源码 · 求 Star</a>
+  <a class="btn ghost" href="https://github.com/Kormendierijon681-oss/mcd-margin-mirror#readme" target="_blank">查看完整 README</a>
+</div>
+
+<p class="note">
+  本页成本率<b>全部为虚构示例</b>（食品 32% / 人工 18% / 房租 12% / 特许权费 5% / 其他 6%），仅用于演示计算流程，<b>不含任何品牌的真实经营数据</b>。<br>
+  真实场景请把上框数字换成你自己认可的成本口径重算。输出为结构化估算，非官方数据，不构成经营建议。<br>
+  项目：麦麦毛利镜（mcd-margin-mirror）· 麦当劳程序员创意开发大赛参赛作品 · 取数交给 MCP，算术交给代码，表达交给 Agent。
+</p>
+
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => (n < 0 ? '-' : '') + '¥' + Math.abs(n).toFixed(2);
+const pct = n => (n < 0 ? '' : '') + n.toFixed(1) + '%';
+
+// 复刻 src/estimator.py 的算术顺序与按单品分摊取整，保证与离线 demo 输出到分位一致
+const BASE_ITEMS = [{ lp: 25.5 }, { lp: 12.0 }, { lp: 9.5 }];  // 对应 sample_data/menu_sample.json
+const BASE_TOTAL = 47.0;
+
+function readParams() {
+  const num = (id, d) => { const v = parseFloat($(id).value); return isNaN(v) ? d : v; };
+  return {
+    L: Math.max(0.01, num('L', 47)),
+    d: num('disc', 0) / 100,
+    food: num('food', 32) / 100,
+    labor: num('labor', 18) / 100,
+    occ: num('occ', 12) / 100,
+    roy: num('roy', 5) / 100,
+    other: num('other', 6) / 100
+  };
+}
+
+function calc(p) {
+  const scale = p.L / BASE_TOTAL;
+  const lists = BASE_ITEMS.map(it => it.lp * scale);
+  const listTotal = lists.reduce((a, b) => a + b, 0);
+
+  // 实付：按单品比例分摊到分位，最后一项补尾差（与 scripts/demo.py 一致）
+  const paidTotal = p.L * (1 - p.d);
+  const paid = lists.map(lp => Math.round(lp * paidTotal / listTotal * 100) / 100);
+  const diff = Math.round((paidTotal - paid.reduce((a, b) => a + b, 0)) * 100) / 100;
+  if (diff) paid[paid.length - 1] = Math.round((paid[paid.length - 1] + diff) * 100) / 100;
+  const revenue = paid.reduce((a, b) => a + b, 0);
+
+  // 成本：固定类按原价、变动类按实付，求和顺序与 estimator.py 相同
+  const food = listTotal * p.food;
+  const labor = listTotal * p.labor;
+  const occupancy = listTotal * p.occ;
+  const royalty = revenue * p.roy;
+  const other = listTotal * p.other;
+  const totalCost = food + labor + occupancy + royalty + other;
+  const gp = revenue - totalCost;
+  const gm = revenue > 0 ? gp / revenue * 100 : 0;
+  const F = p.food + p.labor + p.occ + p.other;
+  const be = p.roy >= 1 ? 0 : (1 - F / (1 - p.roy)) * 100;
+  return { revenue, listTotal, food, labor, occupancy, royalty, other, totalCost, gp, gm, be, F };
+}
+
+function render() {
+  const p = readParams();
+  const r = calc(p);
+  $('dlab').textContent = (p.d * 100).toFixed(1) + '%';
+  $('fold').textContent = (1 - p.d).toFixed(1);
+  $('list').textContent = '¥' + r.listTotal.toFixed(2);
+  $('paid').textContent = fmt(r.revenue);
+  $('save').textContent = fmt(r.listTotal - r.revenue);
+  $('fixed').textContent = fmt(r.food + r.labor + r.occupancy + r.other);
+  $('royal').textContent = fmt(r.royalty);
+  $('gp').textContent = fmt(r.gp);
+  $('gm').textContent = pct(r.gm);
+  $('gp').className = 'v big ' + (r.gp >= 0 ? 'pos' : 'neg');
+  $('gm').className = 'v big ' + (r.gp >= 0 ? 'pos' : 'neg');
+  const items = [[r.food, 'c1', 'p1'], [r.labor, 'c2', 'p2'], [r.occupancy, 'c3', 'p3'], [r.royalty, 'c4', 'p4'], [r.other, 'c5', 'p5']];
+  items.forEach(([amt, cid, pid]) => {
+    $(cid).textContent = fmt(amt);
+    $(pid).textContent = r.revenue > 0 ? (amt / r.revenue * 100).toFixed(1) + '%' : '-';
+  });
+  $('be').textContent = r.be.toFixed(1) + '%';
+  const al = $('alert');
+  if (r.gp < 0) {
+    al.className = 'alert bad';
+    al.textContent = '让利 ' + (p.d * 100).toFixed(1) + '% → 这一单门店亏 ' + fmt(-r.gp) + '（毛利率 ' + r.gm.toFixed(1) + '%）。顾客省下的钱，门店一分没省。';
+  } else {
+    al.className = 'alert ok';
+    al.textContent = '让利 ' + (p.d * 100).toFixed(1) + '% → 这一单门店还赚 ' + fmt(r.gp) + '（毛利率 ' + r.gm.toFixed(1) + '%），离盈亏平衡点 ' + r.be.toFixed(1) + '% 还有余量。';
+  }
+  drawChart(p, r);
+}
+
+function drawChart(p, r) {
+  const svg = $('chart'), W = 700, H = 220, L = 46, B = 26, T = 12, R = 8;
+  const xs = [], ys = [];
+  for (let i = 0; i <= 80; i++) {
+    const d = i / 100, paid = p.L * (1 - d);
+    const gp = paid - p.L * r.F - paid * p.roy;
+    xs.push({ d, y: paid > 0 ? gp / paid * 100 : 0 });
+  }
+  const maxY = Math.max(30, ...xs.map(o => o.y)), minY = Math.min(-60, ...xs.map(o => o.y));
+  const px = d => L + d * (W - L - R);
+  const py = y => T + (maxY - y) / (maxY - minY) * (H - T - B);
+  let s = '<line x1="' + L + '" y1="' + py(0) + '" x2="' + (W - R) + '" y2="' + py(0) + '" stroke="#ccc" stroke-dasharray="4 4"/>';
+  s += '<text x="' + (L - 6) + '" y="' + (py(0) + 4) + '" font-size="11" fill="#999" text-anchor="end">0%</text>';
+  s += '<line x1="' + px(p.d) + '" y1="' + T + '" x2="' + px(p.d) + '" y2="' + (H - B) + '" stroke="#ffc72c" stroke-width="2"/>';
+  const pts = xs.map(o => px(o.d).toFixed(1) + ',' + py(o.y).toFixed(1)).join(' ');
+  s += '<polyline points="' + pts + '" fill="none" stroke="#1f6feb" stroke-width="2"/>';
+  const cur = xs.find(o => Math.abs(o.d - p.d) < 0.001) || xs[0];
+  s += '<circle cx="' + px(cur.d).toFixed(1) + '" cy="' + py(cur.y).toFixed(1) + '" r="4" fill="#d7232c"/>';
+  const beD = Math.min(0.8, Math.max(0, r.be / 100));
+  s += '<text x="' + (px(beD) + 4).toFixed(1) + '" y="' + (T + 12) + '" font-size="11" fill="#d7232c">盈亏平衡 ' + r.be.toFixed(1) + '%</text>';
+  s += '<text x="' + L + '" y="' + (H - 6) + '" font-size="11" fill="#999">0%</text>';
+  s += '<text x="' + (W - R) + '" y="' + (H - 6) + '" font-size="11" fill="#999" text-anchor="end">让利 80%</text>';
+  svg.innerHTML = s;
+}
+
+['disc','L','food','labor','occ','roy','other'].forEach(id => {
+  $(id).addEventListener('input', render);
+});
+render();
+</script>
 </body></html>
